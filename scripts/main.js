@@ -1,7 +1,7 @@
 import '../styles/style.css'
 
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 // General scene settings 
 
@@ -21,26 +21,28 @@ camera.position.setX(-3);
 renderer.render(scene, camera);
 
 // Torus
-
-const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
-const material = new THREE.MeshBasicMaterial({ color: 0xff6347 });
+const torusTexture = new THREE.TextureLoader().load('../img/metallic_texture.jpg');
+const geometry = new THREE.TorusGeometry(11, 3, 3, 30);
+const material = new THREE.MeshBasicMaterial( { map: torusTexture } );
 const torus = new THREE.Mesh(geometry, material);
 scene.add(torus);
 
-//Lights
+// Lights
 
-const pointLight = new THREE.PointLight(0xffffff);
-pointLight.position.set(5, 5, 5);
+const pointLight = new THREE.PointLight( 0xff0000, 1, 100 );
+pointLight.position.set( 50, 50, 50 );
 
-const ambientLight = new THREE.AmbientLight(0xffffff);
+const ambientLight = new THREE.AmbientLight( 0x404040 );;
 scene.add(pointLight, ambientLight);
 
 // Helpers
 
-const lightHelper = new THREE.PointLightHelper(pointLight);
+/* const lightHelper = new THREE.PointLightHelper(pointLight);
 const gridHelper = new THREE.GridHelper(200, 50);
 scene.add(lightHelper, gridHelper);
-const controls = new OrbitControls(camera, renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement); */
+
+// Stars
 
 function addStar() {
   const geometry = new THREE.SphereGeometry(0.25, 24, 24);
@@ -60,12 +62,15 @@ scene.background = spaceTexture;
 
 // Avatar
 
-const adnTexture = new THREE.TextureLoader().load('../img/adn.png');
+const adnTexture = new THREE.TextureLoader().load('../img/me.jpeg');
 const adn = new THREE.Mesh(
   new THREE.BoxGeometry(3,3,3),
   new THREE.MeshBasicMaterial({ map: adnTexture })
 );
 scene.add(adn);
+
+adn.position.z = -5;
+adn.position.x = 2;
 
 // Moon
 
@@ -81,6 +86,30 @@ const moon = new THREE.Mesh(
 );
 scene.add(moon)
 
+moon.position.z = 30;
+moon.position.setX(-10);
+
+// Scroll animation
+
+function moveCamera() {
+  const t = document.body.getBoundingClientRect().top;
+
+  moon.rotation.x += 0.05;
+  moon.rotation.y += 0.075;
+  moon.rotation.z += 0.05;
+
+  adn.rotation.y += 0.01;
+  adn.rotation.z += 0.01;
+
+  camera.position.z = t * -0.01;
+  camera.position.x = t * -0.0002;
+  camera.position.y = t * -0.0002;
+}
+document.body.onscroll = moveCamera;
+moveCamera();
+
+// Animation Loop
+
 function animate() {
   requestAnimationFrame( animate );
 
@@ -88,10 +117,11 @@ function animate() {
   torus.rotation.y += 0.005;
   torus.rotation.z += 0.01;
 
-  controls.update();
+  moon.rotation.x += 0.005;
 
-  renderer.render( scene, camera );
+  // controls.update();
 
+  renderer.render(scene, camera);
 }
 
 animate();
