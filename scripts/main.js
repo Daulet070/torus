@@ -44,8 +44,8 @@ function addStar() {
 }
 Array(200).fill().forEach(addStar);
 
-const spaseTexture = new THREE.TextureLoader().load('../img/space.jpg');
-scene.background = spaseTexture;
+const spaceTexture = new THREE.TextureLoader().load('../img/space.jpg');
+scene.background = spaceTexture;
 
 function animate() {
   requestAnimationFrame( animate );
